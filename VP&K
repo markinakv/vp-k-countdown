@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VP & K</title>
+  <style>
+    :root{
+      --bg1:#120f2f;
+      --bg2:#25154a;
+      --card:rgba(255,255,255,.08);
+      --text:#fff;
+      --muted:rgba(255,255,255,.72);
+      --accent:#ff7bd5;
+      --accent2:#8de1ff
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      display:grid;
+      place-items:center;
+      color:var(--text);
+      background:radial-gradient(circle at top,#3d1f74 0%,var(--bg1) 45%,#090814 100%);
+      overflow:hidden
+    }
+    .glow{
+      position:absolute;
+      width:55vmax;
+      height:55vmax;
+      border-radius:50%;
+      filter:blur(70px);
+      opacity:.28;
+      animation:float 12s ease-in-out infinite alternate
+    }
+    .g1{background:#ff5fb0;top:-18vmax;left:-10vmax}
+    .g2{background:#69d7ff;bottom:-20vmax;right:-10vmax;animation-duration:16s}
+    @keyframes float{
+      from{transform:translate3d(0,0,0) scale(1)}
+      to{transform:translate3d(4vmax,-2vmax,0) scale(1.08)}
+    }
+    .card{
+      position:relative;
+      z-index:1;
+      width:min(920px,92vw);
+      padding:40px 26px 30px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:28px;
+      background:var(--card);
+      backdrop-filter:blur(18px);
+      box-shadow:0 20px 70px rgba(0,0,0,.35);
+      text-align:center
+    }
+    h1{
+      margin:0 0 10px;
+      font-size:clamp(40px,7vw,78px);
+      letter-spacing:.08em
+    }
+    .subtitle{
+      margin:0 0 24px;
+      font-size:clamp(14px,2vw,18px);
+      color:var(--muted);
+      letter-spacing:.12em;
+      text-transform:uppercase
+    }
+    .timer{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px
+    }
+    .unit{
+      padding:18px 12px;
+      border-radius:22px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .num{
+      font-size:clamp(36px,7vw,74px);
+      font-weight:800;
+      line-height:1
+    }
+    .label{
+      margin-top:8px;
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--muted)
+    }
+    .footer{
+      margin-top:20px;
+      color:var(--muted);
+      font-size:14px
+    }
+    .done{color:var(--accent2)}
+    @media (max-width:640px){
+      .timer{grid-template-columns:repeat(2,1fr)}
+      .card{padding:30px 16px 22px}
+    }
+  </style>
+</head>
+<body>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <main class="card">
+    <h1>VP &amp; K</h1>
+    <p class="subtitle">Countdown to 28.03.2026 16:15</p>
+    <section class="timer" aria-label="Countdown timer">
+      <div class="unit">
+        <div class="num" id="days">00</div>
+        <div class="label">Days</div>
+      </div>
+      <div class="unit">
+        <div class="num" id="hours">00</div>
+        <div class="label">Hours</div>
+      </div>
+      <div class="unit">
+        <div class="num" id="minutes">00</div>
+        <div class="label">Minutes</div>
+      </div>
+      <div class="unit">
+        <div class="num" id="seconds">00</div>
+        <div class="label">Seconds</div>
+      </div>
+    </section>
+    <div class="footer" id="status">Waiting for the moment.</div>
+  </main>
+  <script>
+    // Цель: 28.03.2026 16:15 по Софии (+02:00 в марте 2026)
+    const target = new Date('2026-03-28T16:15:00+02:00').getTime();
+    const els = ['days','hours','minutes','seconds']
+      .reduce((a,id)=>{a[id]=document.getElementById(id);return a;}, {});
+    const status = document.getElementById('status');
+    const pad = n => String(n).padStart(2,'0');
+
+    function tick(){
+      const now = Date.now();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        els.days.textContent = '00';
+        els.hours.textContent = '00';
+        els.minutes.textContent = '00';
+        els.seconds.textContent = '00';
+        status.innerHTML = '<span class="done">Time is here.</span>';
+        return;
+      }
+
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+
+      els.days.textContent = pad(d);
+      els.hours.textContent = pad(h);
+      els.minutes.textContent = pad(m);
+      els.seconds.textContent = pad(s);
+      status.textContent = 'Counting down together.';
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
